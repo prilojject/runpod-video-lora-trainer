@@ -42,7 +42,7 @@ print('torch', torch.__version__, '| musubi commit', open('/opt/musubi-tuner.com
 # accelerate default config: single GPU, no prompts at runtime.
 RUN mkdir -p /root/.cache/huggingface/accelerate && printf '%s\n' \
     'compute_environment: LOCAL_MACHINE' 'distributed_type: "NO"' 'downcast_bf16: "no"' \
-    'machine_rank: 0' 'main_training_function: main' 'mixed_precision: bf16' 'num_machines: 1' \
+    'machine_rank: 0' 'main_training_function: main' 'mixed_precision: fp16' 'num_machines: 1' \
     'num_processes: 1' 'rdzv_backend: static' 'same_network: true' 'use_cpu: false' \
     > /root/.cache/huggingface/accelerate/default_config.yaml
 

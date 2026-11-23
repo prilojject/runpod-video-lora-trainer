@@ -109,7 +109,7 @@ Missing captions fall back to `trigger_word [class_word]`. The trigger word is p
 
 * **Minimum 24 GB** (RTX 4090, L4, A5000, …) for the default 1.3B T2V job. Blackwell MIG SKUs are excluded (this image is a CUDA 12.6 build).
 * **48 GB** (L40S, A6000 Ada, A6000, H100) is recommended for 14B and Wan 2.2 (two 14B experts ≈ 53 GiB of DiT weights alone).
-* The worker always uses `--sdpa --mixed_precision bf16 --gradient_checkpointing --optimizer_type adamw8bit`. Default `--fp8_base`. On 24 GB cards it enables `--fp8_t5` / `--vae_cache_cpu` and automatic `--blocks_to_swap` (max 29 for 1.3B, 39 for 14B). `--offload_inactive_dit` (Wan 2.2 both experts on 48 GB+) is mutually exclusive with block swap.
+* The worker always uses `--sdpa --mixed_precision fp16 --gradient_checkpointing --optimizer_type adamw8bit`. Official Comfy-Org DiT files are fp16; musubi-tuner requires `fp16` (or `no`) mixed precision for those weights. Default `--fp8_base`. On 24 GB cards it enables `--fp8_t5` / `--vae_cache_cpu` and automatic `--blocks_to_swap` (max 29 for 1.3B, 39 for 14B). `--offload_inactive_dit` (Wan 2.2 both experts on 48 GB+) is mutually exclusive with block swap.
 * Recommended default resolution: **832×480**. On 24 GB with 14B or long clips, drop to 640×480 or 480×480.
 * **Do not** run 14B / Wan 2.2 on the official Hub test — that test is a 20-step 1.3B job at 512 px with no samples.
 

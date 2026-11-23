@@ -4,7 +4,7 @@ info:
   description: >
     Runpod Serverless worker that trains a Wan 2.1 / Wan 2.2 LoRA with
     kohya-ss/musubi-tuner v0.3.6 and returns a .safetensors file.
-  version: 1.0.0
+  version: 1.0.1
   license:
     name: MIT
 servers:

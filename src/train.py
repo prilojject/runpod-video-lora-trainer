@@ -164,7 +164,7 @@ def build_train_command(cfg, models: dict[str, str], dataset_toml: str, out_dir:
     args = [
         sys.executable, "-m", "accelerate.commands.launch",
         "--num_cpu_threads_per_process=1",
-        "--mixed_precision=bf16",
+        "--mixed_precision=fp16",
         "--num_processes=1",
         "--num_machines=1",
         "--dynamo_backend=no",
@@ -175,7 +175,7 @@ def build_train_command(cfg, models: dict[str, str], dataset_toml: str, out_dir:
         f"--output_dir={out_dir}",
         f"--output_name={output_name}",
         "--sdpa",
-        "--mixed_precision=bf16",
+        "--mixed_precision=fp16",
         "--gradient_checkpointing",
         "--optimizer_type=adamw8bit",
         f"--learning_rate={cfg.learning_rate:g}",

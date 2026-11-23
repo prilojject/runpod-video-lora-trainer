@@ -39,6 +39,8 @@ def test_wan13_train_command():
     assert "--network_module=networks.lora_wan" in s
     assert "--max_train_steps=20" in s
     assert "--fp8_base" in s
+    assert "--mixed_precision=fp16" in s
+    assert "--mixed_precision=bf16" not in s
     assert "--optimizer_type=adamw8bit" in s
     assert "--discrete_flow_shift=3.0" in s
     assert "--blocks_to_swap" not in s
