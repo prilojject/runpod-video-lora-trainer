@@ -113,7 +113,8 @@ Missing captions fall back to `trigger_word [class_word]`. The trigger word is p
 * Recommended default resolution: **832×480**. On 24 GB with 14B or long clips, drop to 640×480 or 480×480.
 * **Do not** run 14B / Wan 2.2 on the official Hub test — that test is a 20-step 1.3B job at 512 px with no samples.
 
-Measured smoke-test cost will be added here after the first GPU run. Check [Runpod pricing](https://www.runpod.io/pricing) for current Serverless rates. A cold start without a network volume must download ~13.5 GiB for the default stack.
+**Measured smoke test (23 Nov 2026, Asia/Bangkok, Runpod Serverless, RTX 4090 / `ADA_24`, image `v1.0.1`, no network volume):**
+Wan 2.1 T2V 1.3B, 20 steps, 512 px, 3 images, no samples — job execution 94.8 s (model download 43 s, train loop 13.5 s), LoRA 41.82 MB, final avr_loss 0.077. Queue time 46.7 s. Check [Runpod pricing](https://www.runpod.io/pricing) for current rates.
 
 ## Quick start
 
