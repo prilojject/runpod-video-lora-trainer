@@ -1,0 +1,156 @@
+openapi: 3.0.3
+info:
+  title: Video LoRA Trainer (Wan 2.1 & Wan 2.2)
+  description: >
+    Runpod Serverless worker that trains a Wan 2.1 / Wan 2.2 LoRA with
+    kohya-ss/musubi-tuner v0.3.6 and returns a .safetensors file.
+  version: 1.0.0
+  license:
+    name: MIT
+servers:
+  - url: https://api.runpod.ai/v2/{endpointId}
+    variables:
+      endpointId:
+        default: YOUR_ENDPOINT_ID
+paths:
+  /run:
+    post:
+      summary: Start a training job (async)
+      operationId: runJob
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunRequest"
+            examples:
+              smoke:
+                $ref: "#/components/examples/Smoke"
+              dryRun:
+                $ref: "#/components/examples/DryRun"
+      responses:
+        "200":
+          description: Job accepted
+  /status/{jobId}:
+    get:
+      summary: Poll job status
+      operationId: getStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Job status and output
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  examples:
+    Smoke:
+      value:
+        input:
+          base_model: wan-t2v-1.3b
+          dataset_url: https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/datasets/tiny_wan.zip
+          trigger_word: zxowl
+          class_word: figurine
+          steps: 20
+          rank: 8
+          resolution: 512
+          num_samples: 0
+    DryRun:
+      value:
+        input:
+          dry_run: true
+          base_model: wan-t2v-1.3b
+          dataset_url: https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/datasets/tiny_wan.zip
+          trigger_word: zxowl
+  schemas:
+    RunRequest:
+      type: object
+      required: [input]
+      properties:
+        input:
+          $ref: "#/components/schemas/JobInput"
+        policy:
+          type: object
+          properties:
+            executionTimeout:
+              type: integer
+              description: Seconds. Raise above the 600 s default for real training.
+    JobInput:
+      type: object
+      required: [dataset_url]
+      properties:
+        base_model:
+          type: string
+          enum: [wan-t2v-1.3b, wan-t2v-14b, wan-i2v-14b, wan22-t2v-a14b, wan22-i2v-a14b]
+          default: wan-t2v-1.3b
+        dataset_url:
+          type: string
+          format: uri
+        trigger_word:
+          type: string
+        class_word:
+          type: string
+        steps:
+          type: integer
+          minimum: 10
+          maximum: 20000
+          default: 2000
+        rank:
+          type: integer
+          default: 16
+        learning_rate:
+          type: number
+          default: 0.0002
+        resolution:
+          description: Integer (square) or WxH / [w, h]. Multiple of 16.
+          example: "832x480"
+        target_frames:
+          description: List or comma-separated N×4+1 lengths. Default [17].
+        wan22_mode:
+          type: string
+          enum: [both, low, high]
+          default: both
+        blocks_to_swap:
+          description: auto, 0, or an integer
+          default: auto
+        fp8_base:
+          type: boolean
+          default: true
+        caption_mode:
+          type: string
+          enum: [auto, trigger, existing]
+          default: auto
+        convert_lora:
+          type: boolean
+          default: false
+        num_samples:
+          type: integer
+          default: 0
+        hf_repo_id:
+          type: string
+        upload_url:
+          type: string
+          format: uri
+        dry_run:
+          type: boolean
+          default: false
+        return_lora_base64:
+          type: boolean
+          default: false
+        run_name:
+          type: string
+        output_name:
+          type: string
+        seed:
+          type: integer
+          default: 42

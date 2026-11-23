@@ -1,0 +1,9 @@
+{
+  "input": {
+    "dry_run": true,
+    "base_model": "wan-t2v-1.3b",
+    "dataset_url": "https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/datasets/tiny_wan.zip",
+    "trigger_word": "zxowl",
+    "class_word": "figurine"
+  }
+}

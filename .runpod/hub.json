@@ -1,0 +1,358 @@
+{
+  "title": "Video LoRA Trainer (Wan 2.1 & Wan 2.2)",
+  "description": "Train Wan 2.1 / Wan 2.2 LoRAs from a zip of videos or images with kohya-ss/musubi-tuner on Runpod Serverless. Send a dataset URL and a trigger word; get a .safetensors LoRA on your Hugging Face repo, S3 bucket or network volume. Default is the 1.3B T2V model (24 GB). 14B and Wan 2.2 work best on 48 GB.",
+  "type": "serverless",
+  "category": "video",
+  "iconUrl": "https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/.runpod/icon.png",
+  "config": {
+    "runsOn": "GPU",
+    "containerDiskInGb": 150,
+    "gpuCount": 1,
+    "gpuIds": "ADA_24,AMPERE_24,ADA_48_PRO,AMPERE_48,-NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb,-NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 2g.48gb",
+    "allowedCudaVersions": [
+      "13.4",
+      "13.3",
+      "13.2",
+      "13.1",
+      "13.0",
+      "12.9",
+      "12.8",
+      "12.7",
+      "12.6"
+    ],
+    "presets": [
+      {
+        "name": "Wan 2.1 T2V 1.3B (default)",
+        "defaults": {
+          "BASE_MODEL": "wan-t2v-1.3b",
+          "PRESET": "wan-t2v-1.3b",
+          "STEPS": 2000,
+          "LORA_RANK": 16,
+          "LEARNING_RATE": "2e-4",
+          "RESOLUTION": "832x480",
+          "TARGET_FRAMES": "17"
+        }
+      },
+      {
+        "name": "Wan 2.1 T2V 14B (48 GB recommended)",
+        "defaults": {
+          "BASE_MODEL": "wan-t2v-14b",
+          "PRESET": "wan-t2v-14b",
+          "STEPS": 2000,
+          "LORA_RANK": 16,
+          "LEARNING_RATE": "2e-4",
+          "RESOLUTION": "832x480",
+          "TARGET_FRAMES": "17"
+        }
+      },
+      {
+        "name": "Wan 2.2 T2V both experts (48 GB recommended)",
+        "defaults": {
+          "BASE_MODEL": "wan22-t2v-a14b",
+          "PRESET": "wan22-t2v-a14b",
+          "WAN22_MODE": "both",
+          "STEPS": 2000,
+          "LORA_RANK": 16,
+          "LEARNING_RATE": "2e-4",
+          "RESOLUTION": "832x480",
+          "TARGET_FRAMES": "17"
+        }
+      },
+      {
+        "name": "Quick test (1.3B, 20 steps)",
+        "defaults": {
+          "BASE_MODEL": "wan-t2v-1.3b",
+          "PRESET": "quick",
+          "STEPS": 20,
+          "LORA_RANK": 8,
+          "LEARNING_RATE": "2e-4",
+          "RESOLUTION": "512",
+          "TARGET_FRAMES": "17",
+          "NUM_SAMPLES": 0
+        }
+      }
+    ],
+    "env": [
+      {
+        "key": "BASE_MODEL",
+        "input": {
+          "name": "Base model",
+          "type": "string",
+          "description": "wan-t2v-1.3b is the default (no token, fits 24 GB). 14B and Wan 2.2 A14B are large (48 GB recommended). Hunyuan and FramePack are not in v1. Override per job with input.base_model.",
+          "default": "wan-t2v-1.3b",
+          "advanced": false,
+          "options": [
+            {
+              "label": "Wan 2.1 T2V 1.3B (default, 24 GB)",
+              "value": "wan-t2v-1.3b"
+            },
+            {
+              "label": "Wan 2.1 T2V 14B (48 GB recommended)",
+              "value": "wan-t2v-14b"
+            },
+            {
+              "label": "Wan 2.1 I2V 14B (needs video, 48 GB recommended)",
+              "value": "wan-i2v-14b"
+            },
+            {
+              "label": "Wan 2.2 T2V A14B (48 GB recommended)",
+              "value": "wan22-t2v-a14b"
+            },
+            {
+              "label": "Wan 2.2 I2V A14B (needs video, 48 GB recommended)",
+              "value": "wan22-i2v-a14b"
+            }
+          ]
+        }
+      },
+      {
+        "key": "PRESET",
+        "input": {
+          "name": "Preset",
+          "type": "string",
+          "description": "Named defaults for steps, rank, learning rate and resolution. Explicit settings win.",
+          "default": "wan-t2v-1.3b",
+          "advanced": false,
+          "options": [
+            {
+              "label": "Wan 2.1 T2V 1.3B",
+              "value": "wan-t2v-1.3b"
+            },
+            {
+              "label": "Wan 2.1 T2V 14B",
+              "value": "wan-t2v-14b"
+            },
+            {
+              "label": "Wan 2.1 I2V 14B",
+              "value": "wan-i2v-14b"
+            },
+            {
+              "label": "Wan 2.2 T2V A14B",
+              "value": "wan22-t2v-a14b"
+            },
+            {
+              "label": "Wan 2.2 I2V A14B",
+              "value": "wan22-i2v-a14b"
+            },
+            {
+              "label": "Quick test (20 steps)",
+              "value": "quick"
+            }
+          ]
+        }
+      },
+      {
+        "key": "TRIGGER_WORD",
+        "input": {
+          "name": "Default trigger word",
+          "type": "string",
+          "description": "Unique token that activates the LoRA, e.g. 'zxowl'. Usually set per job (input.trigger_word).",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "DATASET_URL",
+        "input": {
+          "name": "Default dataset URL",
+          "type": "string",
+          "description": "https URL of a .zip/.tar.gz with videos and/or images and same-name .txt captions. Usually sent per job (input.dataset_url).",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "STEPS",
+        "input": {
+          "name": "Training steps",
+          "type": "number",
+          "description": "Optimizer steps. ~2000 for a real LoRA; 20 for a smoke test.",
+          "default": 2000,
+          "min": 10,
+          "max": 20000,
+          "advanced": false
+        }
+      },
+      {
+        "key": "LORA_RANK",
+        "input": {
+          "name": "LoRA rank",
+          "type": "number",
+          "description": "Network dim. 16 is a good default; 32 for a stronger style LoRA.",
+          "default": 16,
+          "min": 1,
+          "max": 256,
+          "advanced": false
+        }
+      },
+      {
+        "key": "LEARNING_RATE",
+        "input": {
+          "name": "Learning rate",
+          "type": "string",
+          "description": "2e-4 is the musubi-tuner default for Wan LoRAs with AdamW8bit.",
+          "default": "2e-4",
+          "advanced": false
+        }
+      },
+      {
+        "key": "RESOLUTION",
+        "input": {
+          "name": "Resolution",
+          "type": "string",
+          "description": "WxH or a single number (square). Must be a multiple of 16. Default 832x480; use 512 for a quick test. On 24 GB, drop 14B jobs to 640x480 or 480x480.",
+          "default": "832x480",
+          "advanced": false
+        }
+      },
+      {
+        "key": "TARGET_FRAMES",
+        "input": {
+          "name": "Target frames",
+          "type": "string",
+          "description": "Video lengths to extract, each N\u00d74+1 (e.g. 17 or 17,25). Ignored for image-only datasets. Default 17.",
+          "default": "17",
+          "advanced": false
+        }
+      },
+      {
+        "key": "WAN22_MODE",
+        "input": {
+          "name": "Wan 2.2 mode",
+          "type": "string",
+          "description": "Wan 2.2 only: train both high+low experts (default), or only the low- or high-noise DiT.",
+          "default": "both",
+          "advanced": false,
+          "options": [
+            {
+              "label": "Both experts",
+              "value": "both"
+            },
+            {
+              "label": "Low-noise only",
+              "value": "low"
+            },
+            {
+              "label": "High-noise only",
+              "value": "high"
+            }
+          ]
+        }
+      },
+      {
+        "key": "CAPTION_MODE",
+        "input": {
+          "name": "Captions",
+          "type": "string",
+          "description": "auto = use .txt captions when present, else the trigger word; trigger = ignore captions; existing = prefer .txt files.",
+          "default": "auto",
+          "advanced": false,
+          "options": [
+            {
+              "label": "Auto",
+              "value": "auto"
+            },
+            {
+              "label": "Trigger word only",
+              "value": "trigger"
+            },
+            {
+              "label": "Existing .txt only",
+              "value": "existing"
+            }
+          ]
+        }
+      },
+      {
+        "key": "NUM_SAMPLES",
+        "input": {
+          "name": "Sample videos",
+          "type": "number",
+          "description": "Short clips rendered after training (0-4). Default 0 \u2014 video sampling is expensive.",
+          "default": 0,
+          "min": 0,
+          "max": 4,
+          "advanced": false
+        }
+      },
+      {
+        "key": "HF_OUTPUT_REPO",
+        "input": {
+          "name": "Hugging Face output repo",
+          "type": "string",
+          "description": "Optional 'user/repo' to upload the LoRA + model card. Needs HF_TOKEN with write access.",
+          "default": "",
+          "advanced": false
+        }
+      },
+      {
+        "key": "HF_PRIVATE",
+        "input": {
+          "name": "Private HF repo",
+          "type": "boolean",
+          "description": "Create the output repo as private.",
+          "default": true,
+          "trueValue": "true",
+          "falseValue": "false",
+          "advanced": true
+        }
+      },
+      {
+        "key": "HF_TOKEN",
+        "input": {
+          "name": "HF_TOKEN",
+          "type": "string",
+          "description": "Hugging Face token with write access for HF_OUTPUT_REPO. Default Wan weights are public and do not need a token. Use a Runpod secret: {{ RUNPOD_SECRET_hf_token }}.",
+          "default": "",
+          "advanced": true
+        }
+      },
+      {
+        "key": "CONVERT_LORA",
+        "input": {
+          "name": "Also write ComfyUI LoRA",
+          "type": "boolean",
+          "description": "Run convert_lora.py --target other and deliver a second file.",
+          "default": false,
+          "trueValue": "true",
+          "falseValue": "false",
+          "advanced": true
+        }
+      },
+      {
+        "key": "BLOCKS_TO_SWAP",
+        "input": {
+          "name": "Blocks to swap",
+          "type": "string",
+          "description": "auto (default, based on VRAM), 0 to disable, or an integer. Max 29 for 1.3B and 39 for 14B. Mutually exclusive with inactive-DiT CPU offload.",
+          "default": "auto",
+          "advanced": true
+        }
+      },
+      {
+        "key": "SAVE_EVERY_N_STEPS",
+        "input": {
+          "name": "Checkpoint every N steps",
+          "type": "number",
+          "description": "Intermediate LoRA files (useful with a network volume). 0 = final only.",
+          "default": 0,
+          "min": 0,
+          "max": 20000,
+          "advanced": true
+        }
+      },
+      {
+        "key": "TRAIN_TIMEOUT_SECONDS",
+        "input": {
+          "name": "Training watchdog (s)",
+          "type": "number",
+          "description": "Kill musubi-tuner after this many seconds (0 = off). Keep below the endpoint execution timeout. Cold start can download ~13.5 GiB for the default 1.3B stack.",
+          "default": 0,
+          "min": 0,
+          "max": 86400,
+          "advanced": true
+        }
+      }
+    ]
+  }
+}

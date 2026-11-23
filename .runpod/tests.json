@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "wan_1_3b_smoke_20_steps",
+      "input": {
+        "base_model": "wan-t2v-1.3b",
+        "dataset_url": "https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/datasets/tiny_wan.zip",
+        "trigger_word": "zxowl",
+        "class_word": "figurine",
+        "steps": 20,
+        "rank": 8,
+        "resolution": 512,
+        "num_samples": 0,
+        "run_name": "hub-test-wan13"
+      },
+      "timeout": 1800000
+    }
+  ],
+  "config": {
+    "gpuTypeId": "NVIDIA GeForce RTX 4090",
+    "gpuCount": 1,
+    "allowedCudaVersions": ["13.4","13.3","13.2","13.1","13.0","12.9","12.8","12.7","12.6"]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "input": {
+    "base_model": "wan-t2v-1.3b",
+    "dataset_url": "https://example.com/your-clips.zip",
+    "trigger_word": "zxowl",
+    "class_word": "figurine",
+    "steps": 2000,
+    "rank": 16,
+    "learning_rate": 0.0002,
+    "resolution": "832x480",
+    "target_frames": [17],
+    "hf_repo_id": "your-name/zxowl-wan13-lora"
+  }
+}

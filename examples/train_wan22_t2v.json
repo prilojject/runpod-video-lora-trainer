@@ -1,0 +1,13 @@
+{
+  "input": {
+    "base_model": "wan22-t2v-a14b",
+    "wan22_mode": "both",
+    "dataset_url": "https://example.com/your-clips.zip",
+    "trigger_word": "zxowl",
+    "steps": 2000,
+    "rank": 16,
+    "resolution": "832x480",
+    "target_frames": [17],
+    "hf_repo_id": "your-name/zxowl-wan22-lora"
+  }
+}

@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "Video LoRA Trainer (Wan 2.1 & Wan 2.2) — Runpod Serverless worker"
+message: "If you use this software, please cite it using these metadata."
+type: software
+authors:
+  - name: prilojject
+repository-code: "https://github.com/prilojject/runpod-video-lora-trainer"
+url: "https://console.runpod.io/hub/prilojject/runpod-video-lora-trainer"
+abstract: "Runpod Serverless worker that trains Wan 2.1 and Wan 2.2 LoRAs with kohya-ss/musubi-tuner from a zip of videos or images, and returns a .safetensors LoRA."
+keywords:
+  - Runpod
+  - LoRA
+  - Wan
+  - Wan2.1
+  - Wan2.2
+  - musubi-tuner
+  - text-to-video
+  - image-to-video
+  - Serverless
+license: MIT
+version: "1.0.0"
+date-released: "2026-11-23"

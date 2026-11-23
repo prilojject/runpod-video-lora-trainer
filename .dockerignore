@@ -1,0 +1,17 @@
+.git
+.github
+.runpod
+tests
+examples
+scripts
+docs
+*.md
+!README.md
+.env
+.env.*
+**/__pycache__
+**/*.pyc
+.pytest_cache
+outputs/
+*.safetensors
+*.zip

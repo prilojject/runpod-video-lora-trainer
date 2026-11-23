@@ -1,0 +1,32 @@
+# Video LoRA Trainer (Wan 2.1 & Wan 2.2) for Runpod Serverless
+
+> A Runpod Hub Serverless worker that trains Wan 2.1 or Wan 2.2 LoRAs with kohya-ss/musubi-tuner v0.3.6. You send an https URL to a zip of videos and/or images (optional same-name .txt captions) plus a trigger word; you get a .safetensors LoRA (kohya / musubi format) uploaded to your Hugging Face repo, S3 bucket, presigned URL or network volume. Optional convert_lora.py --target other for ComfyUI. Default base model is Wan 2.1 T2V 1.3B (public weights, ~13.5 GiB, fits 24 GB).
+
+Use this file to decide what to read next. Deploy from the Runpod Hub (live after moderation): https://console.runpod.io/hub/prilojject/runpod-video-lora-trainer
+
+Always use async POST /run and raise policy.executionTimeout (the 600 s default kills real training; a cold start may download ~13.5 GiB). Start with "dry_run": true to validate the dataset and model URLs without a GPU. Tokens must be Runpod secrets, never job input. Configure an output (hf_repo_id, upload_url, BUCKET_* or a network volume) or the LoRA is lost with the worker. Do not use Comfy fp8_scaled weights.
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/README.md): Quick start, dataset format, models, GPUs, FAQ
+- [OpenAPI schema](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/openapi.yaml): Job input/output schema for /run and /status
+- [AGENTS.md](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/AGENTS.md): Instructions for coding agents (tests, dry run, secrets, paid GPU jobs, release targeting main)
+- [Hub metadata](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/.runpod/hub.json): Runpod Hub title, form fields, presets, GPU pools
+- [Hub tests](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/.runpod/tests.json): Official Hub test (20-step Wan 2.1 T2V 1.3B LoRA on 3 images)
+- [LICENSE](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/LICENSE): MIT license for the worker code
+
+## Examples
+
+- [Smoke test](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/smoke_test_request.json): 20-step 1.3B job, no samples
+- [Dry run](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/dry_run.json): Validation-only request
+- [Wan 2.1 1.3B](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/train_wan13_object.json): Default-quality job uploaded to Hugging Face
+- [Wan 2.2 T2V](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/train_wan22_t2v.json): Both-expert job (48 GB GPU)
+- [Example dataset](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/datasets/tiny_wan.zip): 3 captioned images (zip)
+
+## Optional
+
+- [Citation file](https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/CITATION.cff): Citation metadata
+- [GitHub repository](https://github.com/prilojject/runpod-video-lora-trainer): Source, issues, releases
+- [kohya-ss/musubi-tuner](https://github.com/kohya-ss/musubi-tuner): Upstream trainer (pin v0.3.6)
+- [Runpod Hub docs](https://docs.runpod.io/hub/overview): How Hub deploy works
+- [Runpod pricing](https://www.runpod.io/pricing): Current Serverless GPU rates

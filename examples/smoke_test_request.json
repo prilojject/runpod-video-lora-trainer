@@ -1,0 +1,13 @@
+{
+  "input": {
+    "base_model": "wan-t2v-1.3b",
+    "dataset_url": "https://raw.githubusercontent.com/prilojject/runpod-video-lora-trainer/main/examples/datasets/tiny_wan.zip",
+    "trigger_word": "zxowl",
+    "class_word": "figurine",
+    "steps": 20,
+    "rank": 8,
+    "resolution": 512,
+    "num_samples": 0,
+    "run_name": "hub-test-wan13"
+  }
+}

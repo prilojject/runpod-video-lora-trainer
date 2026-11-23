@@ -1,0 +1,14 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Video LoRA Trainer (Wan 2.1 & Wan 2.2) Runpod Serverless worker",
+  "description": "Runpod Serverless worker that trains Wan 2.1 / Wan 2.2 LoRAs with kohya-ss/musubi-tuner from a zip of videos or images and returns a .safetensors LoRA.",
+  "excludeFolders": [
+    "tests",
+    "scripts",
+    "assets"
+  ],
+  "excludeFiles": [
+    "REPORT_ru.md",
+    "index.html"
+  ]
+}
